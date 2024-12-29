@@ -9,7 +9,7 @@ import '../models/item_model.dart';
 class LocalDatabase {
   late Database db;
   Future<void> initDatabase() async {
-    db = await databaseFactoryFfi.openDatabase('demo1.db',
+    db = await databaseFactoryFfi.openDatabase('demo2.db',
         options: OpenDatabaseOptions(
             version: 2,
             onCreate: (a, b) async {
