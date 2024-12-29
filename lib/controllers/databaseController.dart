@@ -1,4 +1,3 @@
-import 'package:junaidtraders/models/customer_model.dart';
 import 'package:junaidtraders/services/database.dart';
 
 class DatabaseController {

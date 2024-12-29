@@ -1,17 +1,23 @@
 import 'dart:convert';
 
+import 'package:junaidtraders/models/item_model.dart';
+
+import 'customer_model.dart';
+import 'salesman_model.dart';
+
 class Bill {
-  int? customerId;
-  int? salesmanId;
+  int? id;
+  Customer? customer;
+  SalesMan? salesMan;
   String? type;
   double? totalAmount;
   int? totalItems;
-  String? date;
+  DateTime? date;
   List<BillingItems>? billingItems;
 
   Bill({
-    required this.customerId,
-    required this.salesmanId,
+    required this.customer,
+    required this.salesMan,
     required this.type,
     required this.totalAmount,
     required this.totalItems,
@@ -20,12 +26,15 @@ class Bill {
   });
 
   Bill.fromJson(Map<String, dynamic> json) {
-    customerId = json['customerId'];
-    salesmanId = json['salesmanId'];
+    id = json['id'];
+    var cus = jsonDecode(json['customer']);
+    customer = Customer.fromJson(cus);
+    var sal = jsonDecode(json['salesmane']);
+    salesMan = SalesMan.fromJson(sal);
     type = json['type'];
     totalAmount = json['totalAmount'];
     totalItems = json['totalItems'];
-    date = json['date'];
+    date = DateTime.fromMicrosecondsSinceEpoch(json['date']);
     if (json['billingItems'] != null) {
       var d = jsonDecode(json['billingItems']);
       billingItems = <BillingItems>[];
@@ -37,12 +46,12 @@ class Bill {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['customerId'] = customerId;
-    data['salesmanId'] = salesmanId;
+    data['customer'] = jsonEncode(customer?.toJson());
+    data['salesman'] = jsonEncode(salesMan?.toJson());
     data['type'] = type;
     data['totalAmount'] = totalAmount;
     data['totalItems'] = totalItems;
-    data['date'] = date;
+    data['date'] = date?.microsecondsSinceEpoch;
     if (billingItems != null) {
       data['billingItems'] =
           jsonEncode(billingItems!.map((v) => v.toJson()).toList());
@@ -52,26 +61,24 @@ class Bill {
 }
 
 class BillingItems {
-  int? itemId;
+  Item? item;
   int? quantity;
-  String? itemName;
   double? price;
   double? totalPrice;
   double? discount;
 
   BillingItems({
-    required this.itemId,
+    required this.item,
     required this.quantity,
-    required this.itemName,
     required this.price,
     required this.totalPrice,
     required this.discount,
   });
 
   BillingItems.fromJson(Map<String, dynamic> json) {
-    itemId = json['itemId'];
+    var i = jsonDecode(json['item']);
+    item = Item.fromJson(i);
     quantity = json['quantity'];
-    itemName = json['itemName'];
     price = json['price'];
     totalPrice = json['totalPrice'];
     discount = json['discount'];
@@ -79,9 +86,8 @@ class BillingItems {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['itemId'] = itemId;
+    data['item'] = jsonEncode(item?.toJson());
     data['quantity'] = quantity;
-    data['itemName'] = itemName;
     data['price'] = price;
     data['totalPrice'] = totalPrice;
     data['discount'] = discount;

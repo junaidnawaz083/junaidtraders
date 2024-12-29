@@ -2,6 +2,7 @@ class Customer {
   int? id;
   String? name;
   String? code;
+  String? route;
   String? phone;
   String? address;
   double? credit;
@@ -18,6 +19,7 @@ class Customer {
     id = json['id'];
     name = json['name'];
     code = json['code'];
+    route = json['route'];
     phone = json['phone'];
     address = json['address'];
     credit = json['credit'];
@@ -28,6 +30,7 @@ class Customer {
 
     data['code'] = code;
     data['name'] = name;
+    data['route'] = route;
     data['phone'] = phone;
     data['address'] = address;
     data['credit'] = credit;
