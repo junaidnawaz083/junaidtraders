@@ -7,12 +7,21 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import '../models/customer_model.dart';
 import '../models/item_model.dart';
 import '../models/recovery_model.dart';
+import '../utils/constants.dart';
 
 class LocalDatabase {
-  late Database db;
-  Future<void> initDatabase() async {
+  Database? db;
+
+  Future<void> closeDatabse() async {
+    await db!.close();
+  }
+
+  Future<void> initDatabase(String database) async {
+    if (db != null) {
+      closeDatabse();
+    }
     db = await databaseFactoryFfi.openDatabase(
-      'citytest.db',
+      '$database.db!',
       options: OpenDatabaseOptions(
         version: 2,
         onCreate: (a, b) async {
@@ -44,12 +53,18 @@ class LocalDatabase {
 
   //  <---------------   Recovery   ------------------->
   Future<void> createRecovery(SalesMan model) async {
-    await db.insert('Recovery', model.toJson());
+    if (db == null) {
+      return;
+    }
+    await db!.insert('Recovery', model.toJson());
   }
 
   Future<List<RecoveryModel>> readAllRecoveryData() async {
     List<RecoveryModel> list = [];
-    var result = await db.query(
+    if (db == null) {
+      return [];
+    }
+    var result = await db!.query(
       'Recovery',
     );
     for (var e in result) {
@@ -60,7 +75,7 @@ class LocalDatabase {
 
   Future<RecoveryModel?> getRecoveryById(int id) async {
     try {
-      var result = await db.query('Recovery', where: 'id = $id');
+      var result = await db!.query('Recovery', where: 'id = $id');
       for (var e in result) {
         return RecoveryModel.fromJson(e);
       }
@@ -72,7 +87,7 @@ class LocalDatabase {
 
   Future<void> updateRecovery(RecoveryModel model) async {
     try {
-      await db.update(
+      await db!.update(
         'Recovery',
         model.toJson(),
       );
@@ -83,7 +98,7 @@ class LocalDatabase {
 
   Future<void> deleteRecovery(int id) async {
     try {
-      await db.delete('Recovery', where: 'id = $id');
+      await db!.delete('Recovery', where: 'id = $id');
     } catch (e) {
       log('Error while deleting Recovery   $e');
     }
@@ -92,12 +107,12 @@ class LocalDatabase {
   //  <---------------   Credit     ------------------->
 
   Future<void> createCredit(SalesMan model) async {
-    await db.insert('Credit', model.toJson());
+    await db!.insert('Credit', model.toJson());
   }
 
   Future<List<CreditModel>> readAllCreditData() async {
     List<CreditModel> list = [];
-    var result = await db.query(
+    var result = await db!.query(
       'Credit',
     );
     for (var e in result) {
@@ -108,7 +123,7 @@ class LocalDatabase {
 
   Future<CreditModel?> getCreditById(int id) async {
     try {
-      var result = await db.query('Credit', where: 'id = $id');
+      var result = await db!.query('Credit', where: 'id = $id');
       for (var e in result) {
         return CreditModel.fromJson(e);
       }
@@ -120,7 +135,7 @@ class LocalDatabase {
 
   Future<void> updateCredit(CreditModel model) async {
     try {
-      await db.update(
+      await db!.update(
         'Credit',
         model.toJson(),
       );
@@ -131,7 +146,7 @@ class LocalDatabase {
 
   Future<void> deleteCredit(int id) async {
     try {
-      await db.delete('Credit', where: 'id = $id');
+      await db!.delete('Credit', where: 'id = $id');
     } catch (e) {
       log('Error while deleting Credit   $e');
     }
@@ -140,12 +155,12 @@ class LocalDatabase {
   //  <---------------   Customers  ------------------->
 
   Future<void> createNewCustomer(Customer model) async {
-    await db.insert('Customer', model.toJson());
+    await db!.insert('Customer', model.toJson());
   }
 
   Future<List<Customer>> readAllCustomerData() async {
     List<Customer> list = [];
-    var result = await db.query(
+    var result = await db!.query(
       'Customer',
     );
     for (var e in result) {
@@ -156,7 +171,7 @@ class LocalDatabase {
 
   Future<Customer?> getCustomerById(int id) async {
     try {
-      var result = await db.query('Customer', where: 'id = $id');
+      var result = await db!.query('Customer', where: 'id = $id');
       for (var e in result) {
         return Customer.fromJson(e);
       }
@@ -168,7 +183,7 @@ class LocalDatabase {
 
   Future<Customer?> getCustomerByCode(String code) async {
     try {
-      var result = await db.query('Customer', where: 'code = $code');
+      var result = await db!.query('Customer', where: 'code = $code');
 
       for (var e in result) {
         return Customer.fromJson(e);
@@ -181,7 +196,7 @@ class LocalDatabase {
 
   Future<void> updateCustomer(Customer model) async {
     try {
-      await db.update(
+      await db!.update(
         'Customer',
         model.toJson(),
       );
@@ -192,7 +207,7 @@ class LocalDatabase {
 
   Future<void> deleteCustomer(int id) async {
     try {
-      await db.delete('Customer', where: 'id = $id');
+      await db!.delete('Customer', where: 'id = $id');
     } catch (e) {
       log('Error while deleting Customer   $e');
     }
@@ -200,7 +215,7 @@ class LocalDatabase {
 
   Future<String?> getAvailableCustomerCode(String route) async {
     try {
-      var result = await db.query('Customer', where: 'route = $route');
+      var result = await db!.query('Customer', where: 'route == "$route"');
       int code = await getCustomerCodeByRoute(route);
       Customer model;
       if (result.isEmpty) {
@@ -225,12 +240,12 @@ class LocalDatabase {
   //  <---------------   SalesMan  ------------------->
 
   Future<void> createNewSalesman(SalesMan model) async {
-    await db.insert('SalesMan', model.toJson());
+    await db!.insert('SalesMan', model.toJson());
   }
 
   Future<List<SalesMan>> readAllSalesmanData() async {
     List<SalesMan> list = [];
-    var result = await db.query(
+    var result = await db!.query(
       'SalesMan',
     );
     for (var e in result) {
@@ -241,7 +256,7 @@ class LocalDatabase {
 
   Future<SalesMan?> getSalesManById(int id) async {
     try {
-      var result = await db.query('SalesMan', where: 'id = $id');
+      var result = await db!.query('SalesMan', where: 'id = $id');
       for (var e in result) {
         return SalesMan.fromJson(e);
       }
@@ -253,7 +268,7 @@ class LocalDatabase {
 
   Future<void> updateSalesMan(SalesMan model) async {
     try {
-      await db.update(
+      await db!.update(
         'SalesMan',
         model.toJson(),
       );
@@ -264,7 +279,7 @@ class LocalDatabase {
 
   Future<void> deleteSalesMan(int id) async {
     try {
-      await db.delete('SalesMan', where: 'id = $id');
+      await db!.delete('SalesMan', where: 'id = $id');
     } catch (e) {
       log('Error while deleting SalesMan   $e');
     }
@@ -273,12 +288,12 @@ class LocalDatabase {
   //  <---------------   Item  ------------------->
 
   Future<void> createNewItem(Item model) async {
-    await db.insert('Item', model.toJson());
+    await db!.insert('Item', model.toJson());
   }
 
   Future<List<Item>> readAllItemData() async {
     List<Item> list = [];
-    var result = await db.query(
+    var result = await db!.query(
       'Item',
     );
     for (var e in result) {
@@ -289,7 +304,7 @@ class LocalDatabase {
 
   Future<Item?> getItemById(int id) async {
     try {
-      var result = await db.query('Item', where: 'id = $id');
+      var result = await db!.query('Item', where: 'id = $id');
       for (var e in result) {
         return Item.fromJson(e);
       }
@@ -301,7 +316,7 @@ class LocalDatabase {
 
   Future<String?> getAvailableItemCode(String route) async {
     try {
-      var result = await db.query('Item');
+      var result = await db!.query('Item');
       int code = 1;
       Item model;
       if (result.isEmpty) {
@@ -325,7 +340,7 @@ class LocalDatabase {
 
   Future<void> updateItem(Item model) async {
     try {
-      await db.update(
+      await db!.update(
         'Item',
         model.toJson(),
       );
@@ -336,7 +351,7 @@ class LocalDatabase {
 
   Future<void> deleteItem(int id) async {
     try {
-      await db.delete('Item', where: 'id = $id');
+      await db!.delete('Item', where: 'id = $id');
     } catch (e) {
       log('Error while deleting Item   $e');
     }
@@ -344,13 +359,7 @@ class LocalDatabase {
 
   //    ---------------------   Extraaas ---------------------------------
 
-  Future<int> getCustomerCodeByRoute(String route) async {
-    if (route == 'Model Town') {
-      return 1000;
-    } else if (route == 'Model Town A/B') {
-      return 1000;
-    } else {
-      return 2000;
-    }
+  Future<int> getCustomerCodeByRoute(String r) async {
+    return (routes.indexOf(r) + 1) * 1000;
   }
 }
