@@ -10,6 +10,7 @@ Widget emptyScreen({
   required Widget body,
   Widget? floatingActionButton,
   FloatingActionButtonLocation? floatingActionButtonLocation,
+  List<Widget>? leadingWidgets,
 }) {
   return SafeArea(
     child: Scaffold(
@@ -20,6 +21,7 @@ Widget emptyScreen({
           ? null
           : AppBar(
               title: titleText(text: title),
+              actions: leadingWidgets,
             ),
       body: body,
     ),
@@ -54,13 +56,17 @@ Widget dropDownField({
   required String? value,
   required List data,
   required Function onChange,
+  bool? enabled,
   double? width,
+  FocusNode? focus,
 }) {
   return SizedBox(
     width: width ?? Get.width * 0.2,
     child: DropdownButtonFormField(
+        focusNode: focus,
         isDense: true,
         decoration: InputDecoration(
+          enabled: enabled ?? true,
           filled: true,
           fillColor: Colors.black87,
           isDense: true,
@@ -103,7 +109,7 @@ Widget getTextFormField({
   String? initialValue,
   FocusNode? focusNode,
   TextInputType? keyboardType,
-  required TextInputAction? textInputAction,
+  TextInputAction? textInputAction,
   List<TextInputFormatter>? textInputFormatter,
   bool? isEnabled,
   int? maxLines = 1,
@@ -122,10 +128,13 @@ Widget getTextFormField({
   return SizedBox(
     width: width ?? Get.width * 0.2,
     child: TextFormField(
+      onChanged: onChanged,
       inputFormatters: textInputFormatter,
       keyboardType: keyboardType,
       obscureText: obscureText ?? false,
       controller: controller,
+      autofocus: true,
+      focusNode: focusNode,
       maxLines: maxLines ?? 1,
       enabled: isEnabled,
       validator: (txt) => validator(txt),
@@ -163,6 +172,7 @@ Widget getButton({
   required String text,
   Color? buttonColor,
   double? borderRadius,
+  bool? disabled,
   Color? borderColor,
   Color? textColor,
   FontWeight? fontWeight,
@@ -171,14 +181,20 @@ Widget getButton({
   RxBool loading = false.obs;
   return SizedBox(
     height: height ?? 40,
+    width: width,
     child: ElevatedButton(
       onPressed: () async {
+        if (disabled == true) {
+          return;
+        }
         loading.value = true;
         await onPress();
         loading.value = false;
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: buttonColor ?? Color.fromARGB(255, 175, 142, 129),
+        backgroundColor: disabled == true
+            ? const Color.fromARGB(255, 157, 156, 156)
+            : buttonColor ?? Color.fromARGB(255, 175, 142, 129),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(
             borderRadius ?? 7,
@@ -200,7 +216,9 @@ Widget getButton({
               )
             : getLable(
                 text: text,
-                color: textColor ?? Colors.black,
+                color: disabled == true
+                    ? Colors.black54
+                    : textColor ?? Colors.black,
                 fontSize: fontSize,
                 fontWeight: fontWeight,
               ),
@@ -268,5 +286,51 @@ Widget getBigButton({
               ),
       ),
     ),
+  );
+}
+
+Future<void> showAlertDialog(
+  BuildContext context, {
+  required String title,
+  String? content,
+  required Function onYes,
+  required Function onNo,
+}) async {
+  // set up the button
+  Widget okButton = TextButton(
+    child: Text("Yes"),
+    onPressed: () async {
+      onYes();
+    },
+  );
+  Widget noButton = TextButton(
+    child: Text("No"),
+    onPressed: () {
+      onNo();
+    },
+  );
+
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: getLable(
+      text: title,
+    ),
+    content: content != null
+        ? getLable(
+            text: content,
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.white70,
+          )
+        : null,
+    actions: [okButton, noButton],
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
   );
 }

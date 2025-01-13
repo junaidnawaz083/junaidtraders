@@ -11,6 +11,7 @@ class Customer {
     required this.name,
     required this.code,
     this.phone,
+    this.route,
     this.address,
     this.credit,
   });

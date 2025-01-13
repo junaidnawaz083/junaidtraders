@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -9,8 +10,9 @@ import 'package:junaidtraders/utils/utils.dart';
 import 'package:junaidtraders/utils/validations.dart';
 
 class AddOrUpdateCustomer extends StatefulWidget {
-  const AddOrUpdateCustomer({super.key, required this.con});
+  const AddOrUpdateCustomer({super.key, required this.con, this.customerModel});
   final CustomerController con;
+  final Customer? customerModel;
 
   @override
   State<AddOrUpdateCustomer> createState() => _AddOrUpdateCustomerState();
@@ -28,9 +30,17 @@ class _AddOrUpdateCustomerState extends State<AddOrUpdateCustomer> {
   final _key = GlobalKey<FormState>();
   @override
   void initState() {
-    // TODO: implement initState
     _con = widget.con;
-
+    if (widget.customerModel != null) {
+      txt_name.text = widget.customerModel!.name ?? '';
+      txt_add.text = widget.customerModel!.address ?? '';
+      txt_phone.text = widget.customerModel!.phone ?? '';
+      txt_balance.text = (widget.customerModel!.credit ?? '').toString();
+      CCode = widget.customerModel!.code ?? '';
+      selectedRoute = widget.customerModel!.route ?? '';
+      log(selectedRoute ?? '');
+      setState(() {});
+    }
     super.initState();
   }
 
@@ -42,27 +52,29 @@ class _AddOrUpdateCustomerState extends State<AddOrUpdateCustomer> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: context.width * 0.15,
-                child: getLable(text: 'Route: '),
-              ),
-              dropDownField(
-                width: context.width * 0.3,
-                value: selectedRoute,
-                data: routes,
-                onChange: (val) async {
-                  CCode = await _con.getCustomerCodeByRoute(val);
-                  setState(() {
-                    selectedRoute = val;
-                  });
-                  f1.requestFocus();
-                },
-              )
-            ],
-          ),
+          if (widget.customerModel == null)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: context.width * 0.15,
+                  child: getLable(text: 'Route: '),
+                ),
+                dropDownField(
+                  enabled: widget.customerModel == null,
+                  width: context.width * 0.3,
+                  value: selectedRoute,
+                  data: routes,
+                  onChange: (val) async {
+                    CCode = await _con.getCustomerCodeByRoute(val);
+                    setState(() {
+                      selectedRoute = val;
+                    });
+                    f1.requestFocus();
+                  },
+                )
+              ],
+            ),
           const SizedBox(
             height: 20,
           ),
@@ -202,12 +214,17 @@ class _AddOrUpdateCustomerState extends State<AddOrUpdateCustomer> {
                 SizedBox(
                   width: context.width * 0.13,
                   child: getButton(
-                      onPress: () async {
-                        if (_key.currentState!.validate()) {
-                          addCustomer();
+                    onPress: () async {
+                      if (_key.currentState!.validate()) {
+                        if (widget.customerModel != null) {
+                          await updateCustomer();
+                        } else {
+                          await addCustomer();
                         }
-                      },
-                      text: 'Add'),
+                      }
+                    },
+                    text: widget.customerModel != null ? 'Update' : 'Add',
+                  ),
                 ),
                 SizedBox(
                   width: context.width * 0.04,
@@ -215,10 +232,11 @@ class _AddOrUpdateCustomerState extends State<AddOrUpdateCustomer> {
                 SizedBox(
                   width: context.width * 0.13,
                   child: getButton(
-                      onPress: () {
-                        Get.back();
-                      },
-                      text: 'Back'),
+                    onPress: () {
+                      Get.back();
+                    },
+                    text: 'Back',
+                  ),
                 ),
               ],
             ),
@@ -235,9 +253,20 @@ class _AddOrUpdateCustomerState extends State<AddOrUpdateCustomer> {
         code: CCode,
         address: txt_add.text,
         phone: txt_phone.text,
+        route: selectedRoute,
         credit: double.tryParse(txt_balance.text) ?? 0,
       ),
     );
+    Get.back();
+  }
+
+  Future<void> updateCustomer() async {
+    widget.customerModel!.address = txt_add.text;
+    widget.customerModel!.phone = txt_phone.text;
+    widget.customerModel!.name = txt_name.text;
+    widget.customerModel!.credit = double.tryParse(txt_balance.text) ?? 0;
+
+    await _con.updateCustomer(model: widget.customerModel!);
     Get.back();
   }
 }

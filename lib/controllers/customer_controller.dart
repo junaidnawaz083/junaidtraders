@@ -12,7 +12,6 @@ class CustomerController extends GetxController {
 
   @override
   void onClose() {
-    // TODO: implement onClose
     super.onClose();
   }
 
@@ -31,5 +30,26 @@ class CustomerController extends GetxController {
   Future<void> addCustomer({required Customer model}) async {
     await DBC.instance.addCustomer(model);
     fetchCustomersData();
+  }
+
+  Future<void> updateCustomer({required Customer model}) async {
+    await DBC.instance.updateCustomer(model);
+    fetchCustomersData();
+  }
+
+  Future<void> deleteCustomer(int id) async {
+    bool res = await DBC.instance.deleteCustomer(id);
+    if (res) {
+      customers.removeWhere((e) => e.id == id);
+      update();
+    }
+  }
+
+  Future<void> getCustomerByRoute(String route) async {
+    isLoading = true;
+    update();
+    customers = await DBC.instance.getCustomerByRoute(route);
+    isLoading = false;
+    update();
   }
 }

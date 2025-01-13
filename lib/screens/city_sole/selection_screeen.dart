@@ -30,7 +30,7 @@ class SelectionScreen extends StatelessWidget {
                 width: context.width * 0.2,
                 height: context.width * 0.1,
                 onPress: () async {
-                  await DBC.instance.initDatabse('CityTest');
+                  await DBC.instance.initDatabse('CityTest1');
                   Get.to(MainScreen());
                 },
                 text: 'City',
@@ -39,7 +39,7 @@ class SelectionScreen extends StatelessWidget {
               width: context.width * 0.2,
               height: context.width * 0.1,
               onPress: () async {
-                await DBC.instance.initDatabse('SoleTest');
+                await DBC.instance.initDatabse('SoleTest1');
               },
               text: 'Sole',
               fontSize: 30,

@@ -29,7 +29,7 @@ class Bill {
     id = json['id'];
     var cus = jsonDecode(json['customer']);
     customer = Customer.fromJson(cus);
-    var sal = jsonDecode(json['salesmane']);
+    var sal = jsonDecode(json['salesman']);
     salesMan = SalesMan.fromJson(sal);
     type = json['type'];
     totalAmount = json['totalAmount'];

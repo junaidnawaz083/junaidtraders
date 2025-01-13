@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 Color primary = const Color.fromARGB(255, 175, 142, 129);
+
+PageSize legalPage = PageSize(816, 1344);
+PageSize a4Page = PageSize(796, 1123);
+
 List<String> routes = [
   'Model Town',
   'Setlite Town',
@@ -10,6 +14,9 @@ List<String> routes = [
   'Eye Hospital Road'
 ];
 
-TextInputFormatter phonerNumberFormatter =
-    FilteringTextInputFormatter.allow(RegExp(r'(+92[0-9]{10}|03[0-9]{9})'));
-TextInputFormatter amountFormatter = FilteringTextInputFormatter.digitsOnly;
+class PageSize {
+  double width;
+  double height;
+
+  PageSize(this.width, this.height);
+}

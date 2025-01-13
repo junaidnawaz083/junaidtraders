@@ -10,7 +10,7 @@ class History {
   String? type;
   int? typeId;
   double? amount;
-  String? date;
+  DateTime? date;
 
   History(
       {this.customer,
@@ -29,7 +29,7 @@ class History {
     type = json['type'];
     typeId = json['typeId'];
     amount = json['amount'];
-    date = json['date'];
+    date = DateTime.fromMicrosecondsSinceEpoch(json['date']);
   }
 
   Map<String, dynamic> toJson() {
@@ -39,7 +39,8 @@ class History {
     data['type'] = type;
     data['typeId'] = typeId;
     data['amount'] = amount;
-    data['date'] = date;
+    data['date'] = date?.microsecondsSinceEpoch;
+
     return data;
   }
 }

@@ -1,6 +1,8 @@
 import 'dart:developer';
 
+import 'package:junaidtraders/models/bill_model.dart';
 import 'package:junaidtraders/models/credit_model.dart';
+import 'package:junaidtraders/models/history_model.dart';
 import 'package:junaidtraders/models/salesman_model.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -35,16 +37,16 @@ class LocalDatabase {
             'CREATE TABLE Item (id INTEGER PRIMARY KEY, code TEXT, name TEXT, company TEXT, cost REAL, sale REAL)',
           );
           await a.execute(
-            'CREATE TABLE Credit (id INTEGER PRIMARY KEY, customr TEXT, salesman TEXT, credit REAL, netCredit REAL, date INTEGER)',
+            'CREATE TABLE Credit (id INTEGER PRIMARY KEY, customer TEXT, salesman TEXT, credit REAL, netCredit REAL, date INTEGER)',
           );
           await a.execute(
-            'CREATE TABLE Recovery (id INTEGER PRIMARY KEY, customr TEXT, salesman TEXT, recovery REAL, netCredit REAL, date INTEGER)',
+            'CREATE TABLE Recovery (id INTEGER PRIMARY KEY, customer TEXT, salesman TEXT, recovery REAL, netCredit REAL, date INTEGER)',
           );
           await a.execute(
-            'CREATE TABLE Bill (id INTEGER PRIMARY KEY, customr TEXT, salesman TEXT, type TEXT, totalAmount REAL, totalItems INTEGER, date INTEGER, billingItems TEXT)',
+            'CREATE TABLE Bill (id INTEGER PRIMARY KEY, customer TEXT, salesman TEXT, type TEXT, totalAmount REAL, totalItems INTEGER, date INTEGER, billingItems TEXT)',
           );
           await a.execute(
-            'CREATE TABLE History (id INTEGER PRIMARY KEY, customr TEXT, salesman TEXT, type TEXT, typeId INTEGER, amount REAL, date INTEGER)',
+            'CREATE TABLE History (id INTEGER PRIMARY KEY, customer TEXT, salesman TEXT, type TEXT, typeId INTEGER, amount REAL, date INTEGER)',
           );
         },
       ),
@@ -52,11 +54,17 @@ class LocalDatabase {
   }
 
   //  <---------------   Recovery   ------------------->
-  Future<void> createRecovery(SalesMan model) async {
+  Future<int> createRecovery(RecoveryModel model) async {
     if (db == null) {
-      return;
+      return -1;
     }
-    await db!.insert('Recovery', model.toJson());
+    try {
+      int id = await db!.insert('Recovery', model.toJson());
+      return id;
+    } catch (e) {
+      log('Error while adding Recovery   $e');
+    }
+    return -1;
   }
 
   Future<List<RecoveryModel>> readAllRecoveryData() async {
@@ -96,18 +104,26 @@ class LocalDatabase {
     }
   }
 
-  Future<void> deleteRecovery(int id) async {
+  Future<bool> deleteRecovery(int id) async {
     try {
       await db!.delete('Recovery', where: 'id = $id');
+      return true;
     } catch (e) {
       log('Error while deleting Recovery   $e');
     }
+    return false;
   }
 
   //  <---------------   Credit     ------------------->
 
-  Future<void> createCredit(SalesMan model) async {
-    await db!.insert('Credit', model.toJson());
+  Future<int> createCredit(CreditModel model) async {
+    try {
+      int id = await db!.insert('Credit', model.toJson());
+      return id;
+    } catch (e) {
+      log('Error while adding Credit    $e');
+    }
+    return -1;
   }
 
   Future<List<CreditModel>> readAllCreditData() async {
@@ -144,12 +160,14 @@ class LocalDatabase {
     }
   }
 
-  Future<void> deleteCredit(int id) async {
+  Future<bool> deleteCredit(int id) async {
     try {
       await db!.delete('Credit', where: 'id = $id');
+      return true;
     } catch (e) {
       log('Error while deleting Credit   $e');
     }
+    return false;
   }
 
   //  <---------------   Customers  ------------------->
@@ -160,9 +178,17 @@ class LocalDatabase {
 
   Future<List<Customer>> readAllCustomerData() async {
     List<Customer> list = [];
-    var result = await db!.query(
-      'Customer',
-    );
+    var result = await db!.query('Customer', orderBy: 'CAST(code AS INTEGER)');
+    for (var e in result) {
+      list.add(Customer.fromJson(e));
+    }
+    return list;
+  }
+
+  Future<List<Customer>> readCustomerDataByRoute(String route) async {
+    List<Customer> list = [];
+    var result = await db!.query('Customer',
+        orderBy: 'CAST(code AS INTEGER)', where: 'route = \'$route\'');
     for (var e in result) {
       list.add(Customer.fromJson(e));
     }
@@ -183,7 +209,7 @@ class LocalDatabase {
 
   Future<Customer?> getCustomerByCode(String code) async {
     try {
-      var result = await db!.query('Customer', where: 'code = $code');
+      var result = await db!.query('Customer', where: 'code = \'$code\'');
 
       for (var e in result) {
         return Customer.fromJson(e);
@@ -196,29 +222,31 @@ class LocalDatabase {
 
   Future<void> updateCustomer(Customer model) async {
     try {
-      await db!.update(
-        'Customer',
-        model.toJson(),
-      );
+      var res = await db!
+          .update('Customer', model.toJson(), where: 'id = ${model.id}');
+      log(res.toString());
     } catch (e) {
       log('Error while updating customer :   $e');
     }
   }
 
-  Future<void> deleteCustomer(int id) async {
+  Future<bool> deleteCustomer(int id) async {
     try {
       await db!.delete('Customer', where: 'id = $id');
+      return true;
     } catch (e) {
       log('Error while deleting Customer   $e');
     }
+    return false;
   }
 
   Future<String?> getAvailableCustomerCode(String route) async {
     try {
-      var result = await db!.query('Customer', where: 'route == "$route"');
+      var result = await db!.query('Customer', where: 'route = \'$route\'');
       int code = await getCustomerCodeByRoute(route);
       Customer model;
       if (result.isEmpty) {
+        log('customers are empty');
         return code.toString();
       } else {
         for (var e in result) {
@@ -277,12 +305,14 @@ class LocalDatabase {
     }
   }
 
-  Future<void> deleteSalesMan(int id) async {
+  Future<bool> deleteSalesMan(int id) async {
     try {
       await db!.delete('SalesMan', where: 'id = $id');
+      return true;
     } catch (e) {
       log('Error while deleting SalesMan   $e');
     }
+    return false;
   }
 
   //  <---------------   Item  ------------------->
@@ -314,7 +344,7 @@ class LocalDatabase {
     return null;
   }
 
-  Future<String?> getAvailableItemCode(String route) async {
+  Future<String?> getAvailableItemCode() async {
     try {
       var result = await db!.query('Item');
       int code = 1;
@@ -338,23 +368,175 @@ class LocalDatabase {
     }
   }
 
+  Future<Item?> getItemByCode(String code) async {
+    try {
+      var result = await db!.query('Item', where: 'code = \'$code\'');
+
+      for (var e in result) {
+        return Item.fromJson(e);
+      }
+    } catch (e) {
+      log('Error while fetching  Item by Code   $e');
+      // return null;
+    }
+    return null;
+  }
+
   Future<void> updateItem(Item model) async {
     try {
-      await db!.update(
-        'Item',
-        model.toJson(),
-      );
+      await db!.update('Item', model.toJson(), where: 'id = ${model.id}');
     } catch (e) {
       log('Error while updating Item :   $e');
     }
   }
 
-  Future<void> deleteItem(int id) async {
+  Future<bool> deleteItem(int id) async {
     try {
       await db!.delete('Item', where: 'id = $id');
+      return true;
     } catch (e) {
       log('Error while deleting Item   $e');
     }
+    return false;
+  }
+
+  //  <---------------   Recovery   ------------------->
+  Future<int> createHistory(History model) async {
+    if (db == null) {
+      return -1;
+    }
+    try {
+      int id = await db!.insert('History', model.toJson());
+      return id;
+    } catch (e) {
+      log('Error while adding History   $e');
+    }
+    return -1;
+  }
+
+  Future<List<History>> readAllHistoryData() async {
+    List<History> list = [];
+    if (db == null) {
+      return [];
+    }
+    var result = await db!.query(
+      'History',
+    );
+    for (var e in result) {
+      list.add(History.fromJson(e));
+    }
+    return list;
+  }
+
+  Future<List<History>> readByDateHistoryData(int time) async {
+    List<History> list = [];
+    if (db == null) {
+      return [];
+    }
+    var result = await db!.query('History', where: 'date = $time');
+    for (var e in result) {
+      list.add(History.fromJson(e));
+    }
+    return list;
+  }
+
+  Future<History?> getHistoryById(int id) async {
+    try {
+      var result = await db!.query('History', where: 'id = $id');
+      for (var e in result) {
+        return History.fromJson(e);
+      }
+    } catch (e) {
+      log('Error while getting History : $e');
+    }
+    return null;
+  }
+
+  Future<void> updateHistory(History model) async {
+    try {
+      await db!.update(
+        'History',
+        model.toJson(),
+      );
+    } catch (e) {
+      log('Error while updating History :   $e');
+    }
+  }
+
+  Future<bool> deleteHistory(int id) async {
+    try {
+      await db!.delete('History', where: 'id = $id');
+      return true;
+    } catch (e) {
+      log('Error while deleting History   $e');
+    }
+    return false;
+  }
+
+  Future<bool> deleteHistoryByTypeID(int id) async {
+    try {
+      await db!.delete('History', where: 'typeId = $id');
+      return true;
+    } catch (e) {
+      log('Error while deleting History   $e');
+    }
+    return false;
+  }
+
+  //  <---------------   Bills   ------------------->
+  Future<int> createBill(Bill model) async {
+    if (db == null) {
+      return -1;
+    }
+    try {
+      int id = await db!.insert('Bill', model.toJson());
+      return id;
+    } catch (e) {
+      log('Error while adding Bill   $e');
+    }
+    return -1;
+  }
+
+  Future<List<Bill>> readBillData(int date) async {
+    List<Bill> list = [];
+    if (db == null) {
+      return [];
+    }
+    var result = await db!.query('Bill', where: 'date = $date');
+    for (var e in result) {
+      list.add(Bill.fromJson(e));
+    }
+    return list;
+  }
+
+  Future<Bill?> getBillById(int id) async {
+    try {
+      var result = await db!.query('Bill', where: 'id = $id');
+      for (var e in result) {
+        return Bill.fromJson(e);
+      }
+    } catch (e) {
+      log('Error while getting Bill : $e');
+    }
+    return null;
+  }
+
+  Future<void> updateBill(Bill model) async {
+    try {
+      await db!.update('Bill', model.toJson(), where: 'typeId = ${model.id}');
+    } catch (e) {
+      log('Error while updating Bill :   $e');
+    }
+  }
+
+  Future<bool> deleteBill(int id) async {
+    try {
+      await db!.delete('Bill', where: 'id = $id');
+      return true;
+    } catch (e) {
+      log('Error while deleting Bill   $e');
+    }
+    return false;
   }
 
   //    ---------------------   Extraaas ---------------------------------
