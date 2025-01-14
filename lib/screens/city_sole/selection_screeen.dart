@@ -40,6 +40,7 @@ class SelectionScreen extends StatelessWidget {
               height: context.width * 0.1,
               onPress: () async {
                 await DBC.instance.initDatabse('SoleTest1');
+                Get.to(MainScreen());
               },
               text: 'Sole',
               fontSize: 30,

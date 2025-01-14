@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:junaidtraders/controllers/bill_controller.dart';
 import 'package:junaidtraders/models/bill_model.dart';
+import 'package:junaidtraders/services/printing.dart';
 import 'package:junaidtraders/utils/extensions.dart';
 import 'package:junaidtraders/utils/utils.dart';
 
@@ -109,18 +110,11 @@ class _StockDetailScreen extends State<StockDetailScreen> {
                     height: context.height * 0.1,
                   ),
                   getButton(
+                    disabled: itemsName.isEmpty,
                     width: context.width * 0.3,
                     onPress: () async {
-                      DateTime? date = await showDatePicker(
-                          context: context,
-                          firstDate:
-                              DateTime.now().subtract(const Duration(days: 7)),
-                          lastDate: DateTime.now());
-                      if (date != null) {
-                        setState(() {
-                          selectedDateTime = date;
-                        });
-                      }
+                      await PrintingService.instance
+                          .printStockSheet(itemsName, itemsCount);
                     },
                     text: 'Print Stock Detial',
                   ),

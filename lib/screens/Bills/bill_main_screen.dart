@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:junaidtraders/screens/Bills/bill_history.dart';
@@ -45,7 +44,7 @@ class _BillMainScreenState extends State<BillMainScreen> {
                 getBigButton(
                   width: Get.width * 0.2,
                   onPress: () {
-                    Get.to(() => CreateBillScreen());
+                    Get.to(() => const CreateBillScreen());
                   },
                   text: 'Create Bill',
                 ),
@@ -55,7 +54,7 @@ class _BillMainScreenState extends State<BillMainScreen> {
                 getBigButton(
                   width: Get.width * 0.2,
                   onPress: () {
-                    Get.to(() => BillHistory());
+                    Get.to(() => const BillHistory());
                   },
                   text: 'Bill History',
                 ),
@@ -65,7 +64,7 @@ class _BillMainScreenState extends State<BillMainScreen> {
                 getBigButton(
                   width: Get.width * 0.2,
                   onPress: () {
-                    Get.to(() => StockDetailScreen());
+                    Get.to(() => const StockDetailScreen());
                   },
                   text: 'Stock Detail',
                 )

@@ -3,7 +3,6 @@ import 'package:junaidtraders/controllers/databaseController.dart';
 import 'package:junaidtraders/models/bill_model.dart';
 import 'package:junaidtraders/models/history_model.dart';
 import 'package:junaidtraders/models/item_model.dart';
-import 'package:junaidtraders/services/printing.dart';
 
 import '../models/customer_model.dart';
 import '../models/salesman_model.dart';
@@ -36,18 +35,18 @@ class BillController extends GetxController {
     return await DBC.instance.getBills(date);
   }
 
-  Future<void> addItemToBill(Item item, int Qty, double price) async {
+  Future<void> addItemToBill(Item item, int qty, double price) async {
     billModel!.billingItems!.add(
       BillingItems(
         item: item,
-        quantity: Qty,
+        quantity: qty,
         price: price,
-        totalPrice: Qty * price,
+        totalPrice: qty * price,
         discount: item.sale! - price,
       ),
     );
-    billModel!.totalItems = billModel!.totalItems! + Qty;
-    billModel!.totalAmount = billModel!.totalAmount! + (Qty * price);
+    billModel!.totalItems = billModel!.totalItems! + qty;
+    billModel!.totalAmount = billModel!.totalAmount! + (qty * price);
 
     currentItem = null;
     update();

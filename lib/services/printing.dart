@@ -208,9 +208,9 @@ class PrintingService {
         },
       ),
     );
-    // await Printing.layoutPdf(
-    //     onLayout: (PdfPageFormat format) async => doc.save());
-    await printPage(doc);
+    await Printing.layoutPdf(
+        onLayout: (PdfPageFormat format) async => doc.save());
+    //await printPage(doc);
   }
 
   Future<void> printReportSheet(List<Customer> customer) async {
@@ -303,6 +303,186 @@ class PrintingService {
     // await Printing.layoutPdf(
     //     onLayout: (PdfPageFormat format) async => doc.save());
     await printPage(doc);
+  }
+
+  Future<void> printBillSheet(List<Bill> bills) async {
+    final doc = pw.Document();
+
+    doc.addPage(
+      pw.Page(
+        build: (con) {
+          return pw.Column(
+            children: [
+              pw.Row(
+                children: [
+                  pw.Text(
+                    '   Date:  ',
+                    style: pw.TextStyle(
+                      fontSize: 16,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                  ),
+                  pw.Text(
+                    DateTime.now().formatedDateTime(),
+                    style: pw.TextStyle(
+                      fontSize: 16,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              pw.Divider(thickness: 2),
+              pw.Container(
+                padding: const pw.EdgeInsets.symmetric(vertical: 5),
+                child: pw.Row(
+                  children: [
+                    getFittedContainer(
+                      child: getTitleText('No'),
+                      width: 20,
+                    ),
+                    getSpacer(width: 10),
+                    getFittedContainer(
+                      child: getTitleText('Code'),
+                      width: 30,
+                    ),
+                    getSpacer(width: 10),
+                    getFittedContainer(
+                      child: getTitleText('name'),
+                      width: 120,
+                    ),
+                    getSpacer(width: 20),
+                    getFittedContainer(
+                      child: getTitleText('Number'),
+                      width: 90,
+                    ),
+                    getSpacer(width: 20),
+                    getFittedContainer(
+                      child: getTitleText('Ammount'),
+                      width: 84,
+                    ),
+                    getSpacer(width: 20),
+                    getFittedContainer(
+                      child: getTitleText('Signature'),
+                      width: 84,
+                    ),
+                  ],
+                ),
+              ),
+              for (int c = 0; c < bills.length; c++)
+                pw.Container(
+                  padding: const pw.EdgeInsets.symmetric(vertical: 2),
+                  child: pw.Row(
+                    children: [
+                      getFittedContainer(
+                        child: getTitleText('${c + 1}'),
+                        width: 20,
+                      ),
+                      getSpacer(width: 10),
+                      getFittedContainer(
+                          child: getValueText(bills[c].customer!.code ?? ''),
+                          width: 30),
+                      getSpacer(width: 10),
+                      getFittedContainer(
+                          child: getValueText(bills[c].customer!.name ?? ''),
+                          width: 120),
+                      getSpacer(width: 20),
+                      getFittedContainer(
+                          child: getValueText(bills[c].customer!.phone ?? ''),
+                          width: 90),
+                      getSpacer(width: 30),
+                      getFittedContainer(
+                          child: getValueText(
+                              (bills[c].totalAmount ?? 0).toStringAsFixed(0)),
+                          width: 110),
+                      getSpacer(width: 20),
+                    ],
+                  ),
+                ),
+            ],
+          );
+        },
+      ),
+    );
+    await Printing.layoutPdf(
+        onLayout: (PdfPageFormat format) async => doc.save());
+    // await printPage(doc);
+  }
+
+  Future<void> printStockSheet(List<String> names, List<int> count) async {
+    final doc = pw.Document();
+
+    doc.addPage(
+      pw.Page(
+        build: (con) {
+          return pw.Column(
+            children: [
+              pw.Row(
+                children: [
+                  pw.Text(
+                    '   Date:  ',
+                    style: pw.TextStyle(
+                      fontSize: 16,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                  ),
+                  pw.Text(
+                    DateTime.now().formatedDateTime(),
+                    style: pw.TextStyle(
+                      fontSize: 16,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              pw.Divider(thickness: 2),
+              pw.Container(
+                padding: const pw.EdgeInsets.symmetric(vertical: 5),
+                child: pw.Row(
+                  children: [
+                    getFittedContainer(
+                      child: getTitleText('No'),
+                      width: 20,
+                    ),
+                    getSpacer(width: 30),
+                    getFittedContainer(
+                      child: getTitleText('name'),
+                      width: 120,
+                    ),
+                    getSpacer(width: 210),
+                    getFittedContainer(
+                      child: getTitleText('Quantity'),
+                      width: 84,
+                    ),
+                  ],
+                ),
+              ),
+              for (int c = 0; c < names.length; c++)
+                pw.Container(
+                  padding: const pw.EdgeInsets.symmetric(vertical: 2),
+                  child: pw.Row(
+                    children: [
+                      getFittedContainer(
+                        child: getTitleText('${c + 1}'),
+                        width: 20,
+                      ),
+                      getSpacer(width: 30),
+                      getFittedContainer(
+                          child: getValueText(names[c]), width: 120),
+                      getSpacer(width: 210),
+                      getFittedContainer(
+                          child: getValueText(count[c].toString()), width: 110),
+                      getSpacer(width: 20),
+                    ],
+                  ),
+                ),
+            ],
+          );
+        },
+      ),
+    );
+    await Printing.layoutPdf(
+        onLayout: (PdfPageFormat format) async => doc.save());
+    // await printPage(doc);
   }
 
   Future<void> printPage(Document doc) async {

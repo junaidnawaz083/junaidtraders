@@ -13,6 +13,7 @@ import '../utils/constants.dart';
 
 class LocalDatabase {
   Database? db;
+  Database? itemdb;
 
   Future<void> closeDatabse() async {
     await db!.close();
@@ -47,6 +48,17 @@ class LocalDatabase {
           );
           await a.execute(
             'CREATE TABLE History (id INTEGER PRIMARY KEY, customer TEXT, salesman TEXT, type TEXT, typeId INTEGER, amount REAL, date INTEGER)',
+          );
+        },
+      ),
+    );
+    itemdb = await databaseFactoryFfi.openDatabase(
+      'Items.db!',
+      options: OpenDatabaseOptions(
+        version: 2,
+        onCreate: (a, b) async {
+          await a.execute(
+            'CREATE TABLE Item (id INTEGER PRIMARY KEY, code TEXT, name TEXT, company TEXT, cost REAL, sale REAL)',
           );
         },
       ),
@@ -318,12 +330,12 @@ class LocalDatabase {
   //  <---------------   Item  ------------------->
 
   Future<void> createNewItem(Item model) async {
-    await db!.insert('Item', model.toJson());
+    await itemdb!.insert('Item', model.toJson());
   }
 
   Future<List<Item>> readAllItemData() async {
     List<Item> list = [];
-    var result = await db!.query(
+    var result = await itemdb!.query(
       'Item',
     );
     for (var e in result) {
@@ -334,7 +346,7 @@ class LocalDatabase {
 
   Future<Item?> getItemById(int id) async {
     try {
-      var result = await db!.query('Item', where: 'id = $id');
+      var result = await itemdb!.query('Item', where: 'id = $id');
       for (var e in result) {
         return Item.fromJson(e);
       }
@@ -346,7 +358,7 @@ class LocalDatabase {
 
   Future<String?> getAvailableItemCode() async {
     try {
-      var result = await db!.query('Item');
+      var result = await itemdb!.query('Item');
       int code = 1;
       Item model;
       if (result.isEmpty) {
@@ -370,7 +382,7 @@ class LocalDatabase {
 
   Future<Item?> getItemByCode(String code) async {
     try {
-      var result = await db!.query('Item', where: 'code = \'$code\'');
+      var result = await itemdb!.query('Item', where: 'code = \'$code\'');
 
       for (var e in result) {
         return Item.fromJson(e);
@@ -384,7 +396,7 @@ class LocalDatabase {
 
   Future<void> updateItem(Item model) async {
     try {
-      await db!.update('Item', model.toJson(), where: 'id = ${model.id}');
+      await itemdb!.update('Item', model.toJson(), where: 'id = ${model.id}');
     } catch (e) {
       log('Error while updating Item :   $e');
     }
@@ -392,7 +404,7 @@ class LocalDatabase {
 
   Future<bool> deleteItem(int id) async {
     try {
-      await db!.delete('Item', where: 'id = $id');
+      await itemdb!.delete('Item', where: 'id = $id');
       return true;
     } catch (e) {
       log('Error while deleting Item   $e');
