@@ -6,6 +6,7 @@ import 'package:junaidtraders/utils/utils.dart';
 import '../../controllers/customer_controller.dart';
 import '../../models/customer_model.dart';
 import '../../utils/constants.dart';
+import '../city_sole/selection_screeen.dart';
 
 class RepostScreen extends StatefulWidget {
   const RepostScreen({super.key});
@@ -62,7 +63,7 @@ class _RepostScreenState extends State<RepostScreen> {
             dropDownField(
               width: context.width * 0.2,
               value: selectedRoute,
-              data: routes,
+              data: selectedArea == CitySole.sole ? routes_Sole : routes_city1,
               onChange: (val) async {
                 if (val == null) {
                   return;

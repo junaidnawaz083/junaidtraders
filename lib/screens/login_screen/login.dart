@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/utils.dart';
 import 'package:junaidtraders/screens/city_sole/selection_screeen.dart';
 import 'package:junaidtraders/utils/utils.dart';
 
@@ -118,6 +117,6 @@ class LoginScreen extends StatelessWidget {
   }
 
   Future<void> login() async {
-    Get.to(SelectionScreen());
+    Get.to(const SelectionScreen());
   }
 }

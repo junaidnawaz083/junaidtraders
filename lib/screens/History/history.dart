@@ -23,7 +23,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    // 
     super.initState();
     _con.onInit();
   }

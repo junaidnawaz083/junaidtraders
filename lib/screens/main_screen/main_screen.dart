@@ -6,6 +6,8 @@ import 'package:junaidtraders/screens/Customer/customers.dart';
 import 'package:junaidtraders/screens/History/history.dart';
 import 'package:junaidtraders/screens/Report/resport_screen.dart';
 import 'package:junaidtraders/screens/Salesman/salesman.dart';
+import 'package:junaidtraders/screens/city_sole/selection_screeen.dart';
+import 'package:junaidtraders/screens/settings/settings_screen.dart';
 import 'package:junaidtraders/utils/constants.dart';
 import 'package:junaidtraders/utils/utils.dart';
 
@@ -25,6 +27,7 @@ class MainScreen extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () {
+                  selectedArea = null;
                   Get.back();
                 },
                 child: Container(
@@ -47,9 +50,7 @@ class MainScreen extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  // Get.to(AddOrUpdateCustomer(
-                  //   con: _con,
-                  // ));
+                  Get.to(() => const SettingScreen());
                 },
                 child: Container(
                   decoration: BoxDecoration(

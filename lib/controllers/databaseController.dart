@@ -171,4 +171,18 @@ class DBC {
   Future<bool> deleteBill(int id) async {
     return await _localDatabase.deleteBill(id);
   }
+
+  //      ------------------->  Extra  <----------------------
+
+  Future<void> reCreateCustomer() async {
+    await _localDatabase.reCreateCustomer();
+  }
+
+  Future<void> reCreateHistory() async {
+    await _localDatabase.reCreateHistory();
+  }
+
+  Future<void> reCreateItem() async {
+    await _localDatabase.reCreateItem();
+  }
 }

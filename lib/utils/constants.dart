@@ -6,13 +6,23 @@ Color primary = const Color.fromARGB(255, 175, 142, 129);
 PageSize legalPage = PageSize(816, 1344);
 PageSize a4Page = PageSize(796, 1123);
 
-List<String> routes = [
-  'Model Town',
+List<String> routes_city1 = [
+  'Model Town A/B',
   'Setlite Town',
-  'Nawakot Road',
   'Gareeb Abad',
-  'Eye Hospital Road'
+  'Bagho Bahar',
+  'Eye Hospital',
+  'Nawakot Road',
 ];
+List<String> routes_Sole = [
+  'Zahir Peer',
+  'Sajah',
+  'Feroza',
+  'Nawakot',
+  'Gari Ikhtiar Khan',
+  'Baghobahar',
+];
+//'Airport Road',
 
 class PageSize {
   double width;

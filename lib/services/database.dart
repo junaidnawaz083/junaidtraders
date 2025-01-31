@@ -4,6 +4,7 @@ import 'package:junaidtraders/models/bill_model.dart';
 import 'package:junaidtraders/models/credit_model.dart';
 import 'package:junaidtraders/models/history_model.dart';
 import 'package:junaidtraders/models/salesman_model.dart';
+import 'package:junaidtraders/screens/city_sole/selection_screeen.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../models/customer_model.dart';
@@ -254,7 +255,8 @@ class LocalDatabase {
 
   Future<String?> getAvailableCustomerCode(String route) async {
     try {
-      var result = await db!.query('Customer', where: 'route = \'$route\'');
+      var result = await db!.query('Customer',
+          where: 'route = \'$route\'', orderBy: 'CAST(code AS INTEGER)');
       int code = await getCustomerCodeByRoute(route);
       Customer model;
       if (result.isEmpty) {
@@ -335,9 +337,7 @@ class LocalDatabase {
 
   Future<List<Item>> readAllItemData() async {
     List<Item> list = [];
-    var result = await itemdb!.query(
-      'Item',
-    );
+    var result = await itemdb!.query('Item', orderBy: 'CAST(code AS INTEGER)');
     for (var e in result) {
       list.add(Item.fromJson(e));
     }
@@ -358,7 +358,8 @@ class LocalDatabase {
 
   Future<String?> getAvailableItemCode() async {
     try {
-      var result = await itemdb!.query('Item');
+      var result =
+          await itemdb!.query('Item', orderBy: 'CAST(code AS INTEGER)');
       int code = 1;
       Item model;
       if (result.isEmpty) {
@@ -554,6 +555,35 @@ class LocalDatabase {
   //    ---------------------   Extraaas ---------------------------------
 
   Future<int> getCustomerCodeByRoute(String r) async {
-    return (routes.indexOf(r) + 1) * 1000;
+    if (selectedArea == CitySole.sole) {
+      return (routes_Sole.indexOf(r) + 1) * 1000;
+    } else {
+      return (routes_city1.indexOf(r) + 1) * 1000;
+    }
+  }
+
+  Future<void> reCreateCustomer() async {
+    if (db == null) return;
+    await db!.execute("DROP TABLE IF EXISTS Customer");
+
+    await db!.execute(
+        'CREATE TABLE Customer (id INTEGER PRIMARY KEY, code TEXT, name TEXT,route TEXT, phone TEXT, address TEXT, credit REAL)');
+  }
+
+  Future<void> reCreateHistory() async {
+    if (db == null) return;
+    await db!.execute("DROP TABLE IF EXISTS Customer");
+
+    await db!.execute(
+        "'CREATE TABLE Customer (id INTEGER PRIMARY KEY, code TEXT, name TEXT,route TEXT, phone TEXT, address TEXT, credit REAL)',");
+  }
+
+  Future<void> reCreateItem() async {
+    if (itemdb == null) return;
+    await itemdb!.execute("DROP TABLE IF EXISTS Item");
+
+    await itemdb!.execute(
+      'CREATE TABLE Item (id INTEGER PRIMARY KEY, code TEXT, name TEXT, company TEXT, cost REAL, sale REAL)',
+    );
   }
 }

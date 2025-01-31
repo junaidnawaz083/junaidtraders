@@ -8,6 +8,8 @@ import 'package:junaidtraders/utils/constants.dart';
 import 'package:junaidtraders/utils/utils.dart';
 import 'package:junaidtraders/utils/validations.dart';
 
+import '../city_sole/selection_screeen.dart';
+
 class AddOrUpdateCustomer extends StatefulWidget {
   const AddOrUpdateCustomer({super.key, required this.con, this.customerModel});
   final CustomerController con;
@@ -63,7 +65,9 @@ class _AddOrUpdateCustomerState extends State<AddOrUpdateCustomer> {
                   enabled: widget.customerModel == null,
                   width: context.width * 0.3,
                   value: selectedRoute,
-                  data: routes,
+                  data: selectedArea == CitySole.sole
+                      ? routes_Sole
+                      : routes_city1,
                   onChange: (val) async {
                     CCode = await _con.getCustomerCodeByRoute(val);
                     setState(() {
