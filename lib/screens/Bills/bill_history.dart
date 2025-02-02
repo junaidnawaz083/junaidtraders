@@ -103,18 +103,21 @@ class _BillHistoryState extends State<BillHistory> {
                   getButton(
                     width: context.width * 0.3,
                     onPress: () async {
-                      DateTime? date = await showDatePicker(
-                          context: context,
-                          firstDate:
-                              DateTime.now().subtract(const Duration(days: 7)),
-                          lastDate: DateTime.now());
-                      if (date != null) {
-                        setState(() {
-                          selectedDateTime = date;
-                        });
+                      for (var e in billList) {
+                        await PrintingService.instance.printBill(e);
                       }
                     },
                     text: 'Print All Bill',
+                  ),
+                  SizedBox(
+                    height: context.height * 0.05,
+                  ),
+                  getButton(
+                    width: context.width * 0.3,
+                    onPress: () async {
+                      await PrintingService.instance.printBillSheet(billList);
+                    },
+                    text: 'Print Bill Sheet',
                   ),
                 ],
               ),

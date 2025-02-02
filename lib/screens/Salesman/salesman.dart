@@ -22,7 +22,7 @@ class _SalesmanScreenState extends State<SalesmanScreen> {
   RxString searchText = ''.obs;
   @override
   void initState() {
-    // TODO: implement initState
+    //
 
     super.initState();
     _con.fetchSalemanData();

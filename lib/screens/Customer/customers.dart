@@ -23,7 +23,7 @@ class _CustomerSreenState extends State<CustomerSreen> {
   RxString searchText = ''.obs;
   @override
   void initState() {
-    // TODO: implement initState
+    // 
 
     super.initState();
     _con.fetchCustomersData();

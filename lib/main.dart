@@ -12,7 +12,7 @@ void main() async {
   // DatabaseController.instance.getCustomerByCode();
   runApp(GetMaterialApp(
     theme: ThemeData.dark()
-        .copyWith(primaryColor: Color.fromARGB(255, 175, 142, 129)),
-    home: LoginScreen(),
+        .copyWith(primaryColor: const Color.fromARGB(255, 175, 142, 129)),
+    home: const LoginScreen(),
   ));
 }

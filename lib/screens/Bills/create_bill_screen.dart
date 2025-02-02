@@ -30,6 +30,8 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
       DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0, 0);
   SalesMan? selectedSalesman;
   String name = '';
+  String balance = '0.0';
+
   TextEditingController txt_qty = TextEditingController();
   TextEditingController txt_itemCode = TextEditingController();
   TextEditingController txt_price = TextEditingController();
@@ -284,6 +286,8 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
                                         billingItems: []);
                                     setState(() {
                                       name = customerModel!.name ?? '';
+                                      balance = (customerModel!.credit ?? 0)
+                                          .toStringAsFixed(0);
                                     });
                                     Future.delayed(Duration(milliseconds: 100),
                                         () {
@@ -323,6 +327,27 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
                             width: context.width * 0.2,
                             child: getLable(
                               text: name,
+                              fontSize: 25,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: context.height * 0.025,
+                      ),
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: context.width * 0.1,
+                            child: getLable(
+                              text: 'Credit:',
+                              fontSize: 20,
+                            ),
+                          ),
+                          SizedBox(
+                            width: context.width * 0.2,
+                            child: getLable(
+                              text: balance,
                               fontSize: 25,
                             ),
                           ),
