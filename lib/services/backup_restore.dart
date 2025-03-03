@@ -1,8 +1,11 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:junaidtraders/firebase_options.dart';
 import 'package:junaidtraders/models/customer_model.dart';
 import 'package:junaidtraders/models/item_model.dart';
 import 'package:junaidtraders/screens/city_sole/selection_screeen.dart';
@@ -144,51 +147,67 @@ class BackupRestore {
   }
 
   Future<void> createBackUp() async {
-    String path = '${appDocumentsDir?.path}';
-    var directory =
-        await Directory('$path/${DateTime.now().formatedDateTime()}')
-            .create(recursive: true);
-    path = directory.path;
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
 
-    if (selectedArea == CitySole.city) {
-      directory = await Directory('$path/City').create(recursive: true);
-    } else {
-      directory = await Directory('$path/Sole').create(recursive: true);
+    List<Customer> cusList = await DBC.instance.fetchAllCustomer();
+    for (var model in cusList) {
+      await FirebaseFirestore.instance
+          .collection(selectedArea!.name)
+          .doc(DateTime.now().toString())
+          .collection('Customer')
+          .doc(model.code)
+          .set(model.toJson());
     }
-    path = directory.path;
-    await createCustomerFile(path: path);
-  }
 
-  Future<void> readExcelFiles() async {}
+    //await FirebaseFirestore.instance.collection(selectedArea!.name).doc(DateTime.now().toString()).collection('Customer').add(data)
 
-  Future<void> createExcelFile(
-      {required String filename, required String path}) async {}
-  Future<void> createCustomerFile({required String path}) async {
-    Excel excel = Excel.createExcel();
-    Sheet customerSheet = excel['Sheet1'];
-    List<String> headers = [
-      'Date',
-      'Shop Name',
-      'Tailor Name',
-      'Size',
-      'H',
-      'Other',
-      'Pcs',
-      'Rate',
-      'Total'
-    ];
-    for (int i = 0; i < headers.length; i++) {
-      customerSheet
-          .cell(CellIndex.indexByColumnRow(columnIndex: i, rowIndex: 0))
-          .value = TextCellValue(headers[i]);
-    }
-    var excelData = excel.save();
-    File customerFile = File('$path/Customers.xlsx');
-    if (await customerFile.exists()) {
-      await customerFile.delete();
-    }
-    customerFile.create(recursive: true);
+    //   String path = '${appDocumentsDir?.path}';
+    //   var directory =
+    //       await Directory('$path/${DateTime.now().formatedDateTime()}')
+    //           .create(recursive: true);
+    //   path = directory.path;
 
-    await customerFile.writeAsBytes(excelData ?? []);
+    //   if (selectedArea == CitySole.city) {
+    //     directory = await Directory('$path/City').create(recursive: true);
+    //   } else {
+    //     directory = await Directory('$path/Sole').create(recursive: true);
+    //   }
+    //   path = directory.path;
+    //   await createCustomerFile(path: path);
+    // }
+
+    // Future<void> readExcelFiles() async {}
+
+    // Future<void> createExcelFile(
+    //     {required String filename, required String path}) async {}
+    // Future<void> createCustomerFile({required String path}) async {
+    //   Excel excel = Excel.createExcel();
+    //   Sheet customerSheet = excel['Sheet1'];
+    //   List<String> headers = [
+    //     'Date',
+    //     'Shop Name',
+    //     'Tailor Name',
+    //     'Size',
+    //     'H',
+    //     'Other',
+    //     'Pcs',
+    //     'Rate',
+    //     'Total'
+    //   ];
+    //   for (int i = 0; i < headers.length; i++) {
+    //     customerSheet
+    //         .cell(CellIndex.indexByColumnRow(columnIndex: i, rowIndex: 0))
+    //         .value = TextCellValue(headers[i]);
+    //   }
+    //   var excelData = excel.save();
+    //   File customerFile = File('$path/Customers.xlsx');
+    //   if (await customerFile.exists()) {
+    //     await customerFile.delete();
+    //   }
+    //   customerFile.create(recursive: true);
+
+    //   await customerFile.writeAsBytes(excelData ?? []);
   }
 }

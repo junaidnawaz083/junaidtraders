@@ -24,6 +24,8 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
   final _con = Get.put(BillController());
   FocusNode itemCode = FocusNode();
   FocusNode itemQty = FocusNode();
+  FocusNode itemPrice = FocusNode();
+
   FocusNode d = FocusNode();
 
   DateTime selectedDateTime = DateTime(
@@ -399,11 +401,12 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
                     decimal: false,
                     signed: false,
                   ),
-                  textInputAction: TextInputAction.next,
+                  //textInputAction: TextInputAction.next,
                   onFieldSubmitted: (val) async {
                     if (_formKey.currentState!.validate()) {
                       await con.findItemByCode(val);
                       if (con.currentItem != null) {
+                        itemPrice.requestFocus();
                         txt_price.text =
                             con.currentItem!.sale!.toStringAsFixed(0);
                         txt_qty.text = '1';
@@ -464,14 +467,16 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
                 child: getTextFormField(
                   isEnabled: name != '',
                   controller: txt_price,
-                  //focusNode: c,
+                  focusNode: itemPrice,
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: false,
                     signed: false,
                   ),
-                  textInputAction: TextInputAction.next,
+                  // textInputAction: TextInputAction.none,
                   onFieldSubmitted: (val) async {
-                    if (_formKey.currentState!.validate()) {}
+                    if (_formKey.currentState!.validate()) {
+                      itemQty.requestFocus();
+                    }
                   },
                   validator: (val) {
                     if (con.currentItem == null) {
@@ -505,7 +510,7 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
                   isEnabled:
                       selectedDateTime != null && selectedSalesman != null,
                   controller: txt_qty,
-                  // focusNode: itemQty,
+                  focusNode: itemQty,
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: false,
                     signed: false,
@@ -650,9 +655,11 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
   Future<void> createBill() async {
     bool res = await _con.addBill();
     if (res) {
-      name = '';
+      setState(() {
+        name = '';
+        balance = '';
+      });
       d.requestFocus();
-      setState(() {});
     }
   }
 

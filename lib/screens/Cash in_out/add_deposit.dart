@@ -25,10 +25,10 @@ class AddDeposit extends StatefulWidget {
 
 class _AddDepositState extends State<AddDeposit> {
   final _con = Get.put(Depositcontroller());
-  FocusNode c = FocusNode();
-  FocusNode a = FocusNode();
+  FocusNode amm = FocusNode();
+  FocusNode code = FocusNode();
   FocusNode d = FocusNode();
-
+  bool isClaim = false;
   DateTime? selectedDateTime;
   SalesMan? selectedSalesman;
   String name = '';
@@ -254,13 +254,13 @@ class _AddDepositState extends State<AddDeposit> {
                                 isEnabled: selectedDateTime != null &&
                                     selectedSalesman != null,
                                 controller: txt_customer,
-                                //focusNode: c,
+                                focusNode: code,
                                 keyboardType:
                                     const TextInputType.numberWithOptions(
                                   decimal: false,
                                   signed: false,
                                 ),
-                                textInputAction: TextInputAction.next,
+                                // textInputAction: TextInputAction.next,
                                 onFieldSubmitted: (val) async {
                                   if (_formKey.currentState!.validate()) {
                                     customerModel =
@@ -273,6 +273,7 @@ class _AddDepositState extends State<AddDeposit> {
                                     } else {
                                       setState(() {
                                         name = customerModel!.name ?? '';
+                                        amm.requestFocus();
                                       });
                                       // WidgetsBinding.instance
                                       //     .addPostFrameCallback((_) {
@@ -346,6 +347,29 @@ class _AddDepositState extends State<AddDeposit> {
                         SizedBox(
                           height: context.height * 0.05,
                         ),
+                        if (widget.depositType == CashInOut.Recovery)
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: context.width * 0.1,
+                                child: getLable(
+                                  text: 'Claim:',
+                                  fontSize: 20,
+                                ),
+                              ),
+                              Checkbox(
+                                  value: isClaim,
+                                  onChanged: (val) {
+                                    if (val == null) return;
+                                    setState(() {
+                                      isClaim = val;
+                                    });
+                                  })
+                            ],
+                          ),
+                        SizedBox(
+                          height: context.height * 0.025,
+                        ),
                         Row(
                           children: [
                             SizedBox(
@@ -364,15 +388,16 @@ class _AddDepositState extends State<AddDeposit> {
                                 isEnabled: selectedDateTime != null &&
                                     selectedSalesman != null,
                                 controller: txt_amount,
-                                //  focusNode: a,
+                                focusNode: amm,
                                 keyboardType:
                                     const TextInputType.numberWithOptions(
                                   decimal: false,
                                   signed: false,
                                 ),
-                                textInputAction: TextInputAction.previous,
+                                //textInputAction: TextInputAction.previous,
                                 onFieldSubmitted: (val) async {
                                   if (_formKey.currentState!.validate()) {
+                                    code.requestFocus();
                                     if (widget.depositType ==
                                         CashInOut.Recovery) {
                                       var res = await con.addDeposit(

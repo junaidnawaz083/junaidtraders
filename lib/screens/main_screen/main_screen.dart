@@ -169,7 +169,7 @@ class MainScreen extends StatelessWidget {
                               ),
                             );
                           },
-                          text: 'Recovey Management',
+                          text: 'Recovery Management',
                           fontWeight: FontWeight.bold,
                         ),
                         const SizedBox(
