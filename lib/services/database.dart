@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:junaidtraders/models/bill_model.dart';
 import 'package:junaidtraders/models/credit_model.dart';
@@ -25,7 +26,7 @@ class LocalDatabase {
       closeDatabse();
     }
     db = await databaseFactoryFfi.openDatabase(
-      '$database.db!',
+      '${Directory.current.path}/databse/$database.db!',
       options: OpenDatabaseOptions(
         version: 2,
         onCreate: (a, b) async {

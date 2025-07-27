@@ -72,16 +72,16 @@ class SelectionScreen extends StatelessWidget {
                     },
                     text: 'City',
                     fontSize: 30),
-                getBigButton(
-                    width: context.width * 0.2,
-                    height: context.width * 0.1,
-                    onPress: () async {
-                      await DBC.instance.initDatabse('CityTest21');
-                      selectedArea = CitySole.city;
-                      Get.to(const MainScreen());
-                    },
-                    text: 'City 2',
-                    fontSize: 30),
+                // getBigButton(
+                //     width: context.width * 0.2,
+                //     height: context.width * 0.1,
+                //     onPress: () async {
+                //       await DBC.instance.initDatabse('CityTest21');
+                //       selectedArea = CitySole.city;
+                //       Get.to(const MainScreen());
+                //     },
+                //     text: 'City 2',
+                //     fontSize: 30),
                 getBigButton(
                   width: context.width * 0.2,
                   height: context.width * 0.1,

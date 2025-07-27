@@ -158,7 +158,9 @@ class BackupRestore {
           .doc(DateTime.now().toString())
           .collection('Customer')
           .doc(model.code)
-          .set(model.toJson());
+          .set(
+            model.toJson(),
+          );
     }
 
     //await FirebaseFirestore.instance.collection(selectedArea!.name).doc(DateTime.now().toString()).collection('Customer').add(data)

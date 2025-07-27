@@ -12,13 +12,14 @@ class History {
   double? amount;
   DateTime? date;
 
-  History(
-      {this.customer,
-      this.salesMan,
-      this.type,
-      this.typeId,
-      this.amount,
-      this.date});
+  History({
+    this.customer,
+    this.salesMan,
+    this.type,
+    this.typeId,
+    this.amount,
+    this.date,
+  });
 
   History.fromJson(Map<String, dynamic> json) {
     id = json['id'];

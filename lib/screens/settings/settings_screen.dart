@@ -1,3 +1,6 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:junaidtraders/services/backup_restore.dart';
@@ -66,16 +69,18 @@ class _SettingScreenState extends State<SettingScreen> {
                 SizedBox(
                   width: Get.width * 0.025,
                 ),
-                getBigButton(
-                  width: Get.width * 0.2,
-                  onPress: () async {
-                    //     await _backupRestore.restoreHistoryData();
-                  },
-                  text: 'Restore History',
-                ),
-                SizedBox(
-                  width: Get.width * 0.025,
-                ),
+                // getBigButton(
+                //   width: Get.width * 0.2,
+                //   onPress: () async {
+                //     // //     await _backupRestore.restoreHistoryData();
+                //     // String? path = await ;
+                //     // log(path.toString());
+                //   },
+                //   text: 'Restore History',
+                // ),
+                // SizedBox(
+                //   width: Get.width * 0.025,
+                // ),
                 getBigButton(
                   width: Get.width * 0.2,
                   onPress: () async {
