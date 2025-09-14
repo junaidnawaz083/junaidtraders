@@ -6,6 +6,7 @@ import 'package:junaidtraders/controllers/bill_controller.dart';
 import 'package:junaidtraders/models/bill_model.dart';
 import 'package:junaidtraders/models/customer_model.dart';
 import 'package:junaidtraders/models/salesman_model.dart';
+import 'package:junaidtraders/services/printing.dart';
 import 'package:junaidtraders/utils/extensions.dart';
 import 'package:junaidtraders/utils/utils.dart';
 
@@ -653,7 +654,7 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
   }
 
   Future<void> createBill() async {
-    bool res = await _con.addBill();
+    bool res = await _con.addBill(customerModel!);
     if (res) {
       setState(() {
         name = '';

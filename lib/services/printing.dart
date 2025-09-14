@@ -32,7 +32,7 @@ class PrintingService {
 
   Future<void> printBill(Bill model) async {
     final doc = pw.Document();
-    final image = await imageFromAssetBundle('assets/images/logo.png');
+    final image = await imageFromAssetBundle('assets/images/text-to-image.png');
     doc.addPage(
       pw.Page(
         pageFormat: PdfPageFormat.legal,
@@ -43,39 +43,57 @@ class PrintingService {
               width: 410,
               child: pw.Column(
                 children: [
-                  pw.SizedBox(height: 22),
+                  // pw.SizedBox(height: 22),
                   pw.Row(
-                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    // mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     children: [
                       pw.Row(
                         children: [
                           getFittedContainer(
                               child: getValueText(' Date:  '), width: 40),
                           getFittedContainer(
-                              child: getTitleText(
-                                DateTime.now().formatedDateTime2(),
-                              ),
-                              width: 100),
+                            child: getTitleText(
+                              DateTime.now().formatedDateTime2(),
+                            ),
+                            width: 105,
+                          ),
                         ],
                       ),
                       pw.SizedBox(
                         width: 120,
                         child: Image(
                           image,
-                          fit: pw.BoxFit.fitWidth,
+                          fit: pw.BoxFit.contain,
                         ),
+                      ),
+                    ],
+                  ),
+                  pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Row(
+                        children: [
+                          getFittedContainer(
+                              child: getValueText('Proprietor: '), width: 40),
+                          getFittedContainer(
+                              child: getTitleText('M Nawaz Abbasi'),
+                              width: 100),
+                        ],
                       ),
                       pw.Row(
                         children: [
                           getFittedContainer(
-                              child: getValueText(''), width: 40),
+                              child: getValueText('Contact: '), width: 40),
                           getFittedContainer(
-                              child: getTitleText(''), width: 100),
+                            child: getTitleText('0304-9503520\n0325-1748919'),
+                            width: 100,
+                          ),
                         ],
                       ),
                     ],
                   ),
                   pw.SizedBox(height: 10),
+                  pw.Divider(thickness: 2),
                   pw.Row(
                     mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     children: [
@@ -193,10 +211,44 @@ class PrintingService {
                         mainAxisAlignment: pw.MainAxisAlignment.end,
                         children: [
                           getFittedContainer(
-                              child: getValueText(' Total:  '), width: 30),
+                              child: getValueText('Total Bill:  '), width: 40),
                           getFittedContainer(
                               child: getTitleText(
                                 (model.totalAmount ?? 0).toStringAsFixed(0),
+                              ),
+                              width: 120),
+                        ]),
+                  ),
+                  pw.SizedBox(
+                    width: 410,
+                    child: Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.end,
+                        children: [
+                          getFittedContainer(
+                              child: getValueText('Previous Balance:  '),
+                              width: 40),
+                          getFittedContainer(
+                            child: getTitleText(
+                              (model.customer!.credit ?? 0).toStringAsFixed(0),
+                            ),
+                            width: 120,
+                          ),
+                        ]),
+                  ),
+                  pw.Divider(thickness: 2),
+
+                  pw.SizedBox(
+                    width: 410,
+                    child: Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.end,
+                        children: [
+                          getFittedContainer(
+                              child: getValueText(' Total:  '), width: 30),
+                          getFittedContainer(
+                              child: getTitleText(
+                                (model.totalAmount ?? 0).toStringAsFixed(0) +
+                                    (model.customer!.credit ?? 0)
+                                        .toStringAsFixed(0),
                               ),
                               width: 120),
                         ]),
@@ -501,14 +553,12 @@ class PrintingService {
     }
   }
 
-  Widget getTitleText(
-    String title,
-  ) {
+  Widget getTitleText(String title, {double? fontSize}) {
     return pw.Text(
       title,
       overflow: pw.TextOverflow.clip,
       style: pw.TextStyle(
-        fontSize: 12,
+        fontSize: fontSize ?? 12,
         fontWeight: pw.FontWeight.bold,
       ),
     );

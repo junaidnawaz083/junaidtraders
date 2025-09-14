@@ -3,6 +3,7 @@ import 'package:junaidtraders/controllers/databaseController.dart';
 import 'package:junaidtraders/models/bill_model.dart';
 import 'package:junaidtraders/models/history_model.dart';
 import 'package:junaidtraders/models/item_model.dart';
+import 'package:junaidtraders/services/printing.dart';
 
 import '../models/customer_model.dart';
 import '../models/salesman_model.dart';
@@ -52,28 +53,30 @@ class BillController extends GetxController {
     update();
   }
 
-  Future<bool> addBill() async {
-    // await PrintingService.instance.printBill(billModel!);
+  Future<bool> addBill(Customer cutomerModel) async {
     // return false;
 
     if (billModel == null) {
       return false;
     }
+    billModel!.customer = cutomerModel;
     int res = await DBC.instance.addBill(billModel!);
     if (res != -1) {
-      Customer customer = billModel!.customer!;
-      customer.credit = customer.credit! + billModel!.totalAmount!;
-      await DBC.instance.updateCustomer(customer);
+      cutomerModel.credit = cutomerModel.credit! + billModel!.totalAmount!;
+      await DBC.instance.updateCustomer(cutomerModel);
       await DBC.instance.addCHistory(
         History(
           amount: billModel!.totalAmount,
-          customer: customer,
+          customer: cutomerModel,
           salesMan: billModel!.salesMan,
           date: billModel!.date,
           type: billModel!.type,
           typeId: res,
         ),
       );
+
+      await PrintingService.instance.printBill(billModel!);
+
       billModel = null;
       currentItem = null;
     }
